@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: Backend_postgres
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: Backend
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["/bin/sh", "-c", "sleep 10 && diesel migration run && cargo run"]
+
+volumes:
+  pgdata:
